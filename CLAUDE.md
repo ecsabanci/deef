@@ -75,6 +75,23 @@ development.
 - At the start of a session, checkout main and pull before creating a new
   branch
 
+## Command execution
+
+- Claude never runs build-tool commands of any kind: pnpm, corepack, turbo,
+  tsc, next, node scripts — including direct binaries under
+  `node_modules/.bin`
+- Verification protocol: when a task's DoD requires running a command,
+  print the exact command in a code block, ask the user to run it, and
+  STOP. The user pastes the output back; treat that pasted output as the
+  result
+- Claude still runs itself: file operations, searching/reading code, and
+  READ-ONLY git (status, log, diff — pager is disabled repo-wide via
+  `git config core.pager cat`; keep it that way)
+- git WRITE operations (staging, committing, pushing) and `gh pr create`
+  are handed to the user as exact commands — including the full commit
+  message and the PR title + body. Claude then STOPS and waits for
+  confirmation
+
 ## Commands
 
 - `pnpm dev` → backend dev server

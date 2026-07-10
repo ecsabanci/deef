@@ -220,6 +220,11 @@ create table app_settings (
 
 ## RLS Politikaları
 
+> **Not (2026-07-10):** Bu bölüm kısmen güncelliğini yitirdi. Reaction ve
+> device_token yazmaları artık anon key ile değil, Next.js API route'ları
+> üzerinden service role ile yapılıyor. Güncel politikalar için tek doğruluk
+> kaynağı `docs/001_initial_schema.sql` dosyasıdır.
+
 - `events`, `event_cards`, `categories`: herkese **read**, sadece
   `status = 'published'` olanlar (service role hariç). Write yok.
 - `reactions`: anon **insert/delete** (kendi `device_id`'si ile), read herkese
