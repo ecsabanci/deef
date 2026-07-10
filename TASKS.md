@@ -55,26 +55,26 @@ Branch: `feat/monorepo-setup`
 ### PR Checkpoint 2 — Supabase foundation & seeds
 Branch: `feat/supabase-foundation`
 
-- [ ] **2.1 Apply `docs/001_initial_schema.sql` to the Supabase project**
+- [x] **2.1 Apply `docs/001_initial_schema.sql` to the Supabase project**
   User-assisted: requires a Supabase project + credentials. The schema file
   is applied as-is (never regenerated).
   **DoD:** all tables, the `event_reaction_counts` view, pgvector extension,
   5 seeded categories and 5 `app_settings` keys exist in the project.
 
-- [ ] **2.2 Server-side Supabase client helper**
+- [x] **2.2 Server-side Supabase client helper**
   `apps/backend/src/lib/supabase.ts` — service-role client, guarded with the
   `server-only` package so it can never be bundled client-side.
   **DoD:** a temporary smoke check (script or the health route) reads
   `app_settings` successfully; service key appears only in server code;
   typecheck passes.
 
-- [ ] **2.3 Pipeline shared helpers: settings reader + api_usage logger**
+- [x] **2.3 Pipeline shared helpers: settings reader + api_usage logger**
   `getSetting(key)` (typed, Zod-parsed jsonb values) and `logApiUsage(row)`
   used by all later pipeline steps.
   **DoD:** a scratch script reads `cluster_similarity_threshold` as a number
   and inserts one `api_usage` row; typecheck passes.
 
-- [ ] **2.4 Source seed script (2 real RSS feeds)**
+- [x] **2.4 Source seed script (2 real RSS feeds)**
   `scripts/seed-sources.ts`, idempotent (upsert by `rss_url`), each source
   mapped to a seeded category via `default_category`. Feed choice confirmed
   with the user (see Open questions).
@@ -93,6 +93,8 @@ Branch: `feat/fetch-step`
   For each active source: fetch RSS with `rss-parser`, dedupe by `url`,
   insert into `raw_articles` (title, excerpt, published_at), update
   `sources.last_fetched_at`. One failing source must not abort the rest.
+  Requests MUST send a browser User-Agent — some Turkish news sites block
+  bare clients (verified 2026-07-11).
   **DoD:** running twice against the real feeds inserts zero duplicates on
   the second run; a source with a broken URL is skipped with a logged error
   while others succeed.
