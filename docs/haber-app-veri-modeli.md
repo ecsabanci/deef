@@ -288,7 +288,7 @@ yok, kategori style_prompt'u ile birleştirilecek.
 
 | İş | Model | Not |
 |----|-------|-----|
-| Embedding | `text-embedding-004` (Gemini) | Ucuz, cluster için yeterli |
+| Embedding | `gemini-embedding-001` (Gemini, 768 boyut) | text-embedding-004 emekli edildi — bkz. DECISIONS.md 2026-07-11 |
 | Enrich | Gemini 2.5 Flash | JSON mode, olay başına ~1 çağrı |
 | Görsel | Gemini image API | Kafe projesiyle aynı, olay başına 4-5 görsel |
 

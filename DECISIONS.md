@@ -15,6 +15,20 @@ discussed with the user before any code changes.
 
 ---
 
+### 2026-07-11 — Embedding model: text-embedding-004 → gemini-embedding-001
+- **Decision:** The pipeline uses `gemini-embedding-001` with
+  `outputDimensionality: 768` instead of the retired `text-embedding-004`.
+  Vectors are L2-normalized before storage (Google recommends this for
+  truncated dimensions; cosine similarity itself is scale-invariant, this
+  guards any future dot-product/L2 usage). Schema stays `vector(768)`.
+- **Rationale:** Google removed `text-embedding-004` from the API
+  (verified 2026-07-11 via ListModels: 404 on embedContent, model absent
+  from the key's model list). `gemini-embedding-001` is the stable
+  successor supporting 768-dim output, so no schema migration is needed.
+- **Affects:** src/lib/embedding.ts, PLANNING.md technology table,
+  CLAUDE.md architecture summary, docs/haber-app-veri-modeli.md model
+  table.
+
 ### 2026-07-10 — Fetch step performs no daily-limit check
 - **Decision:** The fetch cron step does not check any `app_settings` daily
   limit. CLAUDE.md's "every cron step checks daily limits" rule applies to

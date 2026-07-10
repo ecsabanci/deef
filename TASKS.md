@@ -89,7 +89,7 @@ server-side, sources seeded. Open PR, stop.
 ### PR Checkpoint 3 — Fetch step
 Branch: `feat/fetch-step`
 
-- [ ] **3.1 Fetch module `src/pipeline/fetch.ts`**
+- [x] **3.1 Fetch module `src/pipeline/fetch.ts`**
   For each active source: fetch RSS with `rss-parser`, dedupe by `url`,
   insert into `raw_articles` (title, excerpt, published_at), update
   `sources.last_fetched_at`. One failing source must not abort the rest.
@@ -99,14 +99,15 @@ Branch: `feat/fetch-step`
   the second run; a source with a broken URL is skipped with a logged error
   while others succeed.
 
-- [ ] **3.2 Embedding generation (`text-embedding-004`)**
+- [x] **3.2 Embedding generation** (`gemini-embedding-001` — see
+  DECISIONS.md 2026-07-11; original model was retired by Google)
   Embed title + excerpt for articles with `embedding is null`, write the
   768-dim vector, log every call to `api_usage` (operation `embed`).
   Runs as part of the fetch step (per docs/haber-app-veri-modeli.md).
   **DoD:** all new articles have non-null embeddings; matching `api_usage`
   rows exist; re-run embeds nothing (idempotent).
 
-- [ ] **3.3 Cron endpoint `GET /api/cron/fetch`**
+- [x] **3.3 Cron endpoint `GET /api/cron/fetch`**
   Protected by `CRON_SECRET` (Authorization: Bearer). Returns a JSON summary
   (sources processed, articles inserted, embeddings created).
   **DoD:** missing/wrong secret → 401 with no side effects; correct secret

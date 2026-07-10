@@ -14,6 +14,20 @@ done, what remains, known issues. Newest entry on top.
 
 ---
 
+### 2026-07-11 — Checkpoint 3: fetch step
+- **Done:** tasks 3.1–3.3 — fetch module (browser UA, per-source failure
+  isolation, URL dedupe verified idempotent); embeddings on
+  gemini-embedding-001 @ 768 dims after Google retired text-embedding-004
+  (recorded in DECISIONS.md, spec docs updated); every embed call logged to
+  api_usage; CRON_SECRET-protected /api/cron/fetch; temp smoke route
+  removed. 57 articles fetched + embedded end to end
+- **Remaining:** checkpoint 4 — cluster step + wiring (RPC migration
+  proposal, cluster module, cron endpoint + vercel.json, README, Phase 1
+  e2e verification)
+- **Known issues:** embedding token counts logged as null (endpoint does
+  not report usage); stale .next types break typecheck after route
+  deletions — delete .next and restart dev
+
 ### 2026-07-11 — Checkpoint 2: Supabase foundation & seeds
 - **Done:** tasks 2.1–2.4 — schema verified in Supabase (10 tables, view,
   pgvector, seeds); server-only service-role client; typed getSetting +
