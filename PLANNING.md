@@ -39,7 +39,7 @@ from a height with its mouth open.
 | Lists | FlashList + expo-image | performance + image cache |
 | Bottom sheet | @gorhom/bottom-sheet | news detail experience |
 | Text LLM | Gemini 2.5 Flash (JSON mode) | summary, metaphor, ELI5 |
-| Embedding | text-embedding-004 | clustering |
+| Embedding | gemini-embedding-001 (768-dim output) | clustering; see DECISIONS.md 2026-07-11 |
 | Images | Gemini image API | category style_prompt + metaphor |
 | Push | expo-notifications | daily brief |
 | Monitoring | Sentry + PostHog | free tier |

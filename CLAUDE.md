@@ -35,7 +35,7 @@ development.
 - Event state machine: clustering → enriching → generating_images →
   published | failed. Every step is idempotent
 - Models: enrich = Gemini 2.5 Flash (JSON mode), embedding =
-  text-embedding-004, images = Gemini image API
+  gemini-embedding-001 (768-dim output), images = Gemini image API
 
 ## Hard rules
 
