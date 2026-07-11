@@ -15,6 +15,20 @@ discussed with the user before any code changes.
 
 ---
 
+### 2026-07-11 — match_article_event RPC (migration 002) design
+- **Decision:** `match_article_event(query_embedding vector(768),
+  lookback_hours int)` returns the single best `(event_id, similarity)`
+  among articles already linked to events, filtered by **event creation
+  time** (`events.created_at`), not article fetch time. The similarity
+  threshold is applied in the cluster module, not in SQL. Execute rights
+  revoked from anon/authenticated — service role only.
+- **Rationale:** Event age matches the data model's "events of the last 48
+  hours" wording (an old event can own a recently fetched article).
+  Thresholding in TypeScript lets the pipeline observe near-miss
+  similarities for tuning. supabase-js cannot express pgvector operators,
+  hence the RPC (see 2026-07-10 entry).
+- **Affects:** docs/002_cluster_similarity_rpc.sql (new), task 4.2.
+
 ### 2026-07-11 — Embedding model: text-embedding-004 → gemini-embedding-001
 - **Decision:** The pipeline uses `gemini-embedding-001` with
   `outputDimensionality: 768` instead of the retired `text-embedding-004`.

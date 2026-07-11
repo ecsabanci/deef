@@ -14,6 +14,19 @@ done, what remains, known issues. Newest entry on top.
 
 ---
 
+### 2026-07-11 — Checkpoint 4: cluster step — PHASE 1 COMPLETE
+- **Done:** tasks 4.1–4.5 — match_article_event RPC applied (migration
+  002, service-role-only); cluster module (sequential matching, daily
+  limit, near-miss logging); /api/cron/cluster + vercel.json (fetch :00/:30,
+  cluster :15/:45); README; e2e verified: 57 articles embedded → 40 events
+  created (limit exercised, 16 skipped), 1 attach — event 13 correctly
+  merged two same-story articles (Swiss coach + player pre-match)
+- **Remaining:** Phase 2 (enrich) — break into tasks next session; user
+  provides the calibrated meta-prompt. Deploy decision (Vercel Pro vs
+  external scheduler) still open
+- **Known issues:** 16 articles await tomorrow's daily-limit reset (live
+  test of the UTC reset); .env.example gitignore decision still pending
+
 ### 2026-07-11 — Checkpoint 3: fetch step
 - **Done:** tasks 3.1–3.3 — fetch module (browser UA, per-source failure
   isolation, URL dedupe verified idempotent); embeddings on
