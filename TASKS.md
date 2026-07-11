@@ -121,14 +121,14 @@ embedded articles, idempotently. Open PR, stop.
 ### PR Checkpoint 4 — Cluster step + wiring
 Branch: `feat/cluster-step`
 
-- [ ] **4.1 Migration proposal: similarity-search RPC (`docs/002_….sql`)**
+- [x] **4.1 Migration proposal: similarity-search RPC (`docs/002_….sql`)**
   supabase-js cannot run pgvector similarity SQL directly; a `match_article`
   RPC (nearest neighbors among articles already linked to events within
   `cluster_lookback_hours`) is needed. New migration file + DECISIONS.md
   entry, **submitted for approval before applying**.
   **DoD:** migration file reviewed, approved, applied; decision recorded.
 
-- [ ] **4.2 Cluster module `src/pipeline/cluster.ts`**
+- [x] **4.2 Cluster module `src/pipeline/cluster.ts`**
   For each unclustered article: nearest-neighbor cosine similarity against
   articles of events from the last `cluster_lookback_hours`; if best match ≥
   `cluster_similarity_threshold` attach to that event, else create a new
@@ -137,19 +137,19 @@ Branch: `feat/cluster-step`
   **DoD:** two similar articles end up on one event; a dissimilar article
   gets its own event; daily event limit respected; re-run changes nothing.
 
-- [ ] **4.3 Cron endpoint `GET /api/cron/cluster` + `vercel.json`**
+- [x] **4.3 Cron endpoint `GET /api/cron/cluster` + `vercel.json`**
   Same `CRON_SECRET` protection; `vercel.json` declares both cron schedules
   (fetch and cluster every 30 min).
   **DoD:** 401 without secret; with secret runs cluster and returns counts;
   `vercel.json` valid with two cron entries.
 
-- [ ] **4.4 README**
+- [x] **4.4 README**
   Setup from a clean clone: prerequisites, `pnpm install`, env setup,
   applying the migration, seeding sources, triggering crons locally via curl.
   **DoD:** following the README verbatim reproduces a working local setup;
   every documented command works as written.
 
-- [ ] **4.5 Phase 1 end-to-end verification**
+- [x] **4.5 Phase 1 end-to-end verification**
   Trigger fetch → cluster locally against the 2 real feeds and inspect the DB.
   **DoD:** `raw_articles` populated with embeddings; at least one event in
   `clustering` status with ≥1 linked article; PROGRESS.md session entry
