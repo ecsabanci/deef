@@ -38,7 +38,7 @@ from a height with its mouth open.
 | Animation | react-native-reanimated | story, transitions |
 | Lists | FlashList + expo-image | performance + image cache |
 | Bottom sheet | @gorhom/bottom-sheet | news detail experience |
-| Text LLM | Gemini 2.5 Flash (JSON mode) | summary, metaphor, ELI5 |
+| Text LLM | gemini-3.5-flash (JSON mode) | summary, metaphor, ELI5; see DECISIONS.md 2026-07-11 |
 | Embedding | gemini-embedding-001 (768-dim output) | clustering; see DECISIONS.md 2026-07-11 |
 | Images | Gemini image API | category style_prompt + metaphor |
 | Push | expo-notifications | daily brief |

@@ -15,6 +15,56 @@ discussed with the user before any code changes.
 
 ---
 
+### 2026-07-11 — Transient API errors do not consume retry_count
+- **Decision:** In pipeline steps, provider-side transient errors (HTTP
+  429 RESOURCE_EXHAUSTED, 503 UNAVAILABLE) do NOT increment an event's
+  `retry_count` and do not set `failed`. The run stops early and the next
+  cron resumes. `retry_count` is reserved for event-specific failures
+  (malformed LLM output, missing articles, etc.). Additionally, enrich
+  calls now pass an API-enforced `responseSchema` after the model emitted
+  trailing junk past the JSON object.
+- **Rationale:** A quota error says nothing about the event; during the
+  first backlog run the free-tier limit (20 req/day) marked ~10 healthy
+  events `failed`. The CLAUDE.md retry rule is interpreted as applying to
+  event-specific errors only.
+- **Affects:** src/pipeline/enrich.ts, src/lib/gemini.ts; future images
+  step inherits the same rule.
+
+### 2026-07-11 — Enrich model: Gemini 2.5 Flash → gemini-3.5-flash
+- **Decision:** The enrich step uses `gemini-3.5-flash` (JSON mode)
+  instead of `gemini-2.5-flash`.
+- **Rationale:** Google returns 404 "no longer available to new users" for
+  gemini-2.5-flash on this project's API key (verified 2026-07-11), even
+  though ListModels still lists it. `gemini-3.5-flash` is the current
+  stable flash-class model; the floating alias `gemini-flash-latest` was
+  rejected because a silently changing model would drift under the
+  calibrated prompt, and preview/lite variants are unstable/weaker.
+- **Affects:** src/lib/gemini.ts, PLANNING.md technology table, CLAUDE.md
+  architecture summary, docs/haber-app-veri-modeli.md model table.
+
+### 2026-07-11 — Enrich step: no separate daily limit
+- **Decision:** The enrich cron performs no dedicated `app_settings` limit
+  check. Its volume is capped upstream: cluster creates at most
+  `max_events_per_day` events, and enrich only processes those.
+- **Rationale:** Mirrors the 2026-07-10 fetch decision — no seeded key
+  applies, and adding one would double-count the same cap. Approved by the
+  user at Phase 2 breakdown review.
+- **Affects:** tasks 5.3/5.4 (enrich module and cron endpoint).
+
+### 2026-07-11 — Enrich system prompt assembly
+- **Decision:** The enrich system prompt = user-calibrated visual-direction
+  section (`docs/prompts/art-director-metaprompt-v1.md`, embedded VERBATIM
+  — no rewording or shortening) + Claude-authored sections for
+  summarization/title/ELI5 (Turkish output) and the JSON output schema
+  matching the 5.1 Zod schema. The fully assembled prompt is shown to the
+  user for review BEFORE the first real Gemini call. No placeholder prompt
+  phase.
+- **Rationale:** The visual-direction section was calibrated separately and
+  frozen (PLANNING.md Phase 2); wrapping it without touching it keeps that
+  calibration intact.
+- **Affects:** task 5.2 (`enrich-prompt.ts`), checkpoint 6 scope (quality
+  pass only, no prompt swap).
+
 ### 2026-07-11 — match_article_event RPC (migration 002) design
 - **Decision:** `match_article_event(query_embedding vector(768),
   lookback_hours int)` returns the single best `(event_id, similarity)`
