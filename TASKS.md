@@ -184,7 +184,7 @@ stop.
 
 ---
 
-## Phase 2 — Enrich (art director) — PROPOSED, awaiting approval
+## Phase 2 — Enrich (art director) ✅ COMPLETE (2026-07-12)
 
 **Phase outcome:** events in `clustering` status get an LLM-generated
 Turkish title, summary, ELI5, visual metaphor, category and importance via
@@ -248,7 +248,7 @@ failures retry and dead-end correctly. Open PR, stop.
 ### PR Checkpoint 6 — Quality pass
 Branch: `feat/enrich-quality`
 
-- [ ] **6.1 Quality pass on 10–15 real events**
+- [x] **6.1 Quality pass on 10–15 real events**
   Reset an approved sample of enriched events back to `clustering`
   (allowed while nothing is published; api_usage logging as usual) and
   re-enrich. User reviews titles/summaries/ELI5/metaphors for tone,
@@ -283,6 +283,27 @@ Open PR, stop.
 
 ---
 
+## Proposed backlog (recorded 2026-07-12, NOT yet approved or scheduled)
+
+- [ ] **B1. Clustering near-duplicate observation**
+  Events 26/27/28 (Türkiye–KKTC gas pipeline) show the same story split
+  across events at threshold 0.82. Observe frequency over a week of real
+  runs (SQL over events + article titles) before tuning
+  `cluster_similarity_threshold` (candidate range 0.78–0.80) — lowering
+  blindly risks false merges.
+  **DoD (when approved):** a written observation summary with data; a
+  threshold decision recorded in DECISIONS.md (change via app_settings,
+  no code).
+
+- [ ] **B2. Digest/roundup filtering at fetch**
+  AA publishes non-news digest items ("Günün Ekonomik Gelişmeleri …",
+  sponsor-branded bulletins) that flow through the pipeline (event 35,
+  importance 2). Decide filter mechanism at fetch (title patterns per
+  source? a `skip_patterns` column on sources?) and propose as a concrete
+  task.
+  **DoD (when approved):** digest items from seeded feeds no longer enter
+  `raw_articles`; filter is source-configurable, not hardcoded.
+
 ## Later phases
 
-Phases 3–6 will be broken down here after Phase 2 is complete and reviewed.
+Phases 3–6 will be broken down after Phase 2 review is merged.

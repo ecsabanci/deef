@@ -14,6 +14,18 @@ done, what remains, known issues. Newest entry on top.
 
 ---
 
+### 2026-07-12 — Checkpoint 6: quality pass — PHASE 2 COMPLETE
+- **Done:** 6.1 — 15-event sample reviewed and signed off by the user:
+  idiomatic Turkish, tone modes correct (somber wildfire condolence,
+  playful markets), hard rules clean (no faces, no text, single scenes),
+  honest importance spread (2–6). Two systemic findings recorded as
+  proposed backlog tasks (B1 cluster near-duplicates, B2 digest filtering
+  at fetch); prompt v2 neutral-register note in DECISIONS.md (v1 frozen)
+- **Remaining:** Phase 3 (images) breakdown next session; ~10 events still
+  awaiting enrich drain (run the loop twice)
+- **Known issues:** threshold 0.82 can split one story into several events
+  (B1); AA digest/promo items enter the pipeline (B2)
+
 ### 2026-07-11 — Checkpoint 5: enrich core
 - **Done:** tasks 5.1–5.4 — Zod output schema; assembled system prompt
   (calibrated art-director section verbatim, user-approved); Gemini helper

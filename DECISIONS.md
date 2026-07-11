@@ -15,6 +15,18 @@ discussed with the user before any code changes.
 
 ---
 
+### 2026-07-12 — Prompt v2 candidate: neutral register (not applied)
+- **Decision:** Recorded for the NEXT prompt version only — v1 stays
+  frozen. The user wants summaries and ELI5s in a more neutral editorial
+  register that does not inherit the source agency's institutional tone
+  (e.g. AA's "devletimiz" warmth observed in the 6.1 quality pass).
+- **Rationale:** Editorial direction from the user during the checkpoint 6
+  sign-off. Applying it would alter calibrated behavior mid-phase; it
+  waits for a user-provided v2 of the art-director document or an approved
+  wrapper revision.
+- **Affects:** future docs/prompts/art-director-metaprompt-v2 and/or the
+  authored wrapper sections in enrich-prompt.ts. No current code change.
+
 ### 2026-07-11 — Transient API errors do not consume retry_count
 - **Decision:** In pipeline steps, provider-side transient errors (HTTP
   429 RESOURCE_EXHAUSTED, 503 UNAVAILABLE) do NOT increment an event's
