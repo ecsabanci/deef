@@ -34,7 +34,7 @@ development.
 - Pipeline (Vercel Cron): fetch → cluster → enrich → images
 - Event state machine: clustering → enriching → generating_images →
   published | failed. Every step is idempotent
-- Models: enrich = Gemini 2.5 Flash (JSON mode), embedding =
+- Models: enrich = gemini-3.5-flash (JSON mode), embedding =
   gemini-embedding-001 (768-dim output), images = Gemini image API
 
 ## Hard rules

@@ -14,10 +14,10 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
 
 ---
 
-## Phase 1 — Backend skeleton + fetch & cluster
+## Phase 1 — Backend skeleton + fetch & cluster ✅ COMPLETE (2026-07-11)
 
-**Phase outcome:** `raw_articles` starts filling from 2 real RSS feeds and
-events get created by the cluster step.
+**Phase outcome (met):** `raw_articles` starts filling from 2 real RSS
+feeds and events get created by the cluster step.
 
 ---
 
@@ -184,6 +184,105 @@ stop.
 
 ---
 
+## Phase 2 — Enrich (art director) — PROPOSED, awaiting approval
+
+**Phase outcome:** events in `clustering` status get an LLM-generated
+Turkish title, summary, ELI5, visual metaphor, category and importance via
+one structured Gemini 2.5 Flash call, then move to `generating_images` —
+with the full retry/failed flow and token-accurate `api_usage` logging.
+v1 rule: `event_cards` is NOT populated (`story_cards_enabled` is false).
+
+---
+
+### PR Checkpoint 5 — Enrich core (placeholder prompt)
+Branch: `feat/enrich-step`
+
+- [x] **5.1 Enrich output schema**
+  Zod schema for the structured LLM response: `title`, `summary`,
+  `eli5`, `category_slug` (must be one of `CATEGORY_SLUGS`),
+  `importance` (int 1–10), `cover_metaphor`. Lives in
+  `apps/backend/src/pipeline/enrich-schema.ts`; no card fields in v1.
+  **DoD:** typecheck passes; schema demonstrably rejects an invalid
+  sample (wrong slug, importance 11) and accepts a valid one.
+
+- [x] **5.2 Gemini structured-call helper + assembled system prompt**
+  `src/lib/gemini.ts`: one call to `gemini-2.5-flash` in JSON mode
+  returning raw text + usage metadata; logs `api_usage` (operation
+  `enrich`) with real input/output token counts.
+  `src/pipeline/enrich-prompt.ts` assembles the system prompt: the
+  calibrated visual-direction section from
+  `docs/prompts/art-director-metaprompt-v1.md` embedded VERBATIM +
+  authored summarization/title/ELI5 sections (Turkish output) + JSON
+  schema section matching 5.1. The full assembled prompt is shown to the
+  user for review BEFORE the first real Gemini call (see DECISIONS.md).
+  **DoD:** user approves the assembled prompt; helper compiles; a single
+  manual invocation returns parseable JSON and writes an `api_usage` row
+  with non-null token counts.
+
+- [x] **5.3 Enrich module `src/pipeline/enrich.ts`**
+  Select events with `status in (clustering, enriching)` older than 15
+  minutes (so cluster settles first); mark `enriching`; build the prompt
+  from the event's linked article titles+excerpts; call Gemini; Zod-parse;
+  update `title/summary/eli5_text/visual_metaphor/importance` and
+  `category_id` (from returned slug); transition to `generating_images`.
+  Failure path: increment `retry_count`, store `error_message`; at
+  `MAX_RETRY_COUNT` (3) set status `failed`. Idempotent: a crashed run
+  leaves `enriching` events that the next run picks up.
+  **DoD:** one real event enriched end to end with Turkish fields
+  populated and status `generating_images`; a forced failure (temporarily
+  bad model name) increments `retry_count` and, after 3 runs, lands in
+  `failed` with `error_message` set; re-run after success changes nothing.
+
+- [x] **5.4 Cron endpoint `GET /api/cron/enrich` + vercel.json entry**
+  Same `CRON_SECRET` pattern; summary JSON (processed, enriched, failed,
+  retried); vercel.json adds the 15-min schedule offset from fetch/cluster.
+  **DoD:** 401 without secret; with secret processes pending events and
+  returns accurate counts; vercel.json valid with three cron entries.
+
+**Checkpoint DoD:** the backlog of `clustering` events flows to
+`generating_images` with plausible (placeholder-quality) Turkish content,
+failures retry and dead-end correctly. Open PR, stop.
+
+---
+
+### PR Checkpoint 6 — Quality pass
+Branch: `feat/enrich-quality`
+
+- [ ] **6.1 Quality pass on 10–15 real events**
+  Reset an approved sample of enriched events back to `clustering`
+  (allowed while nothing is published; api_usage logging as usual) and
+  re-enrich. User reviews titles/summaries/ELI5/metaphors for tone,
+  Turkish quality, and safe-image compliance; importance spread
+  sanity-checked.
+  **DoD:** user signs off on the sample; any prompt tweaks recorded in
+  DECISIONS.md (the calibrated section itself stays frozen unless the
+  user provides a new version); PROGRESS.md updated.
+
+**Checkpoint DoD:** enrich output is production-quality per user review.
+Open PR, stop.
+
+---
+
+## Open questions for Phase 2 (answer before approval)
+
+1. **Enrich daily limit:** no `app_settings` key applies to enrich; its
+   volume is naturally capped upstream by `max_events_per_day` (cluster
+   creates at most 40 events/day, enrich only processes those). Proposal:
+   no separate limit check, recorded in DECISIONS.md like the fetch
+   decision. OK?
+2. **Meta-prompt timing:** is the calibrated prompt ready now, or do we
+   proceed with checkpoint 5's clearly-marked placeholder first? The
+   placeholder will produce structurally valid but tonally uncalibrated
+   content on real events (costing a few cents of Gemini calls).
+3. **Re-enriching for the quality pass (6.2):** OK to reset a sample of
+   already-enriched events back to `clustering` (clearing their generated
+   fields) so the calibrated prompt reprocesses them? They're not
+   published yet, so nothing user-visible changes.
+4. **15-minute minimum event age** before enrich (from the data model doc,
+   so cluster finishes attaching articles): confirm keeping it.
+
+---
+
 ## Later phases
 
-Phases 2–6 will be broken down here after Phase 1 is complete and reviewed.
+Phases 3–6 will be broken down here after Phase 2 is complete and reviewed.

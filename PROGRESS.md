@@ -14,6 +14,21 @@ done, what remains, known issues. Newest entry on top.
 
 ---
 
+### 2026-07-11 — Checkpoint 5: enrich core
+- **Done:** tasks 5.1–5.4 — Zod output schema; assembled system prompt
+  (calibrated art-director section verbatim, user-approved); Gemini helper
+  with API-enforced responseSchema + token-accurate api_usage logging;
+  enrich module (15-min age gate, 10/run cap, clustering→enriching→
+  generating_images, retry/failed verified via articleless test event);
+  /api/cron/enrich + vercel.json. All 40 real events enriched, quality
+  sample reviewed (somber/playful tones landing correctly)
+- **Remaining:** checkpoint 6 quality pass (10–15 events, user sign-off);
+  then Phase 3 (images)
+- **Known issues:** enrich model swapped to gemini-3.5-flash (2.5 closed
+  to new users); free tier (20 req/day) burned retry_count on healthy
+  events before the transient-error fix — billing now enabled; transient
+  429/503 no longer consume retry_count (DECISIONS.md)
+
 ### 2026-07-11 — Checkpoint 4: cluster step — PHASE 1 COMPLETE
 - **Done:** tasks 4.1–4.5 — match_article_event RPC applied (migration
   002, service-role-only); cluster module (sequential matching, daily
