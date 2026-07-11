@@ -10,6 +10,10 @@ const settingSchemas = {
   cluster_similarity_threshold: z.number().min(0).max(1),
   story_cards_enabled: z.boolean(),
   cluster_lookback_hours: z.number().int().positive(),
+  image_model: z.string().min(1),
+  image_resolution: z.string().min(1),
+  image_aspect_ratio: z.string().regex(/^\d+:\d+$/),
+  image_price_usd_per_1m_output_tokens: z.number().positive(),
 } as const satisfies Record<AppSettingKey, z.ZodType>;
 
 export type SettingValue<K extends AppSettingKey> = z.infer<

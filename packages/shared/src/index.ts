@@ -28,6 +28,11 @@ export const APP_SETTING_KEYS = [
   "cluster_similarity_threshold",
   "story_cards_enabled",
   "cluster_lookback_hours",
+  // added by docs/003_image_settings.sql
+  "image_model",
+  "image_resolution",
+  "image_aspect_ratio",
+  "image_price_usd_per_1m_output_tokens",
 ] as const;
 export type AppSettingKey = (typeof APP_SETTING_KEYS)[number];
 

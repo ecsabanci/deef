@@ -15,6 +15,40 @@ discussed with the user before any code changes.
 
 ---
 
+### 2026-07-12 — Style prompts carry technique only; tone lives in directives
+- **Decision:** Category `style_prompt`s must describe TECHNIQUE (medium,
+  palette, composition, hard-rule clauses) and never emotional register.
+  Tone (playful/neutral/somber) is decided per event by the art-director
+  directive layer. Migration 005 rewrites the economy prompt accordingly
+  (drops "anthropomorphized objects with expressive cartoon faces") and
+  adds the missing "no recognizable faces" clause to teknoloji. Spor's
+  "motion lines and energy" reviewed and kept — movement is the domain's
+  visual identity, not a tone override.
+- **Rationale:** The unconditional cartoon-face clause overrode neutral
+  directives (7.3 test, economy event) — a somber economy story would
+  have gotten a joke illustration. Found and directed by the user.
+- **Affects:** categories.style_prompt data (migration 005); the frozen
+  art-director prompt is untouched.
+
+### 2026-07-12 — Cover aspect ratio: 3:4 portrait
+- **Decision:** `image_aspect_ratio` = "3:4" (was a 1:1 placeholder).
+  Set by migration 005 for the live DB and in 003's seed for fresh
+  environments.
+- **Rationale:** User decision after comparing 1:1 / 3:4 / 16:9 renders
+  of real events at task 7.3 — portrait suits scrolling feed cards.
+- **Affects:** app_settings, all future cover generations.
+
+### 2026-07-12 — Full-bleed suffix on style_prompts (migration 004)
+- **Decision:** All five category `style_prompt`s get the suffix
+  "Full-bleed composition, no border, no frame, no margins." via
+  docs/004_style_prompt_full_bleed.sql.
+- **Rationale:** The first supervised gemini-3.1-flash-image generation
+  (task 7.3, event 9) produced a baked-in white border. The fix belongs in
+  the category style layer — the frozen art-director prompt describes
+  scenes, not framing, and stays untouched.
+- **Affects:** categories.style_prompt data (via migration, not schema);
+  all future image generations.
+
 ### 2026-07-12 — Prompt v2 candidate: neutral register (not applied)
 - **Decision:** Recorded for the NEXT prompt version only — v1 stays
   frozen. The user wants summaries and ELI5s in a more neutral editorial
