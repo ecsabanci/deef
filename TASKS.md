@@ -283,6 +283,92 @@ Open PR, stop.
 
 ---
 
+## Phase 3 — Image generation + publishing — PROPOSED, awaiting approval
+
+**Phase outcome:** events in `generating_images` get one cover
+illustration (category `style_prompt` + `visual_metaphor`), uploaded to
+Supabase Storage, and transition to `published` — first end-to-end
+published events, under `max_images_per_day`.
+Model (user decision 2026-07-12): `gemini-3.1-flash-image` @ 1K —
+Imagen 4 and 2.5-flash-image both have scheduled shutdowns.
+
+---
+
+### PR Checkpoint 7 — Image foundation + supervised test call
+Branch: `feat/images-step`
+
+- [x] **7.1 Migration 003: image settings + shared keys**
+  New `app_settings` rows (seeded via `docs/003_image_settings.sql`,
+  applied user-assisted): `image_model` (`"gemini-3.1-flash-image"`),
+  `image_resolution` (`"1K"`), `image_aspect_ratio` (placeholder until
+  the 7.3 decision), `image_price_usd_per_1m_output_tokens` (for
+  `est_cost_usd`; user supplies the price from Google's pricing page).
+  Extend `AppSettingKey` in `@deef/shared` + per-key Zod schemas in
+  `settings.ts`. Model/resolution/ratio changes then need no deploy.
+  **DoD:** migration applied; `getSetting` returns all four values typed;
+  typecheck passes.
+
+- [x] **7.2 Storage `covers` bucket (user-assisted)**
+  User creates the bucket in the Supabase dashboard: public read, no anon
+  writes (service role uploads). Path convention:
+  `events/{event_id}/cover.png`.
+  **DoD:** bucket exists; a manually uploaded test file is publicly
+  readable via its URL; anon upload is rejected.
+
+- [x] **7.3 Image call helper + ONE supervised test call**
+  `src/lib/gemini-image.ts`: one image from a composed prompt
+  (category `style_prompt` + event `visual_metaphor`), using the
+  settings-driven model/resolution; logs `api_usage` (operation `image`,
+  actual token counts from the response, `image_count`, `est_cost_usd`
+  from the price setting). Temporary dev route generates ONE image from a
+  real event and uploads it to `covers` for viewing. User reviews the
+  output — quality, style adherence, safe-image rules — and DECIDES THE
+  ASPECT RATIO from the model's supported options (feed-card driven; 1:1
+  vs 3:4 vs 4:3 vs 16:9 vs 9:16) before anything is batched.
+  **DoD:** one reviewed image in the bucket; aspect ratio decision
+  recorded in DECISIONS.md and written to `app_settings`; api_usage row
+  has non-null token counts and est_cost_usd.
+
+**Checkpoint DoD:** model, resolution, ratio, price, and bucket all
+confirmed against one real reviewed image. Open PR, stop.
+
+---
+
+### PR Checkpoint 8 — Images pipeline + publish
+Branch: `feat/images-publish`
+
+- [ ] **8.1 Images module `src/pipeline/images.ts`**
+  Select `generating_images` events (importance desc, created_at asc
+  tiebreaker — biggest stories first, equal ones oldest-first); check `max_images_per_day` against
+  today's `api_usage` image count before each generation; compose prompt;
+  generate; upload to `covers/events/{id}/cover.png`; set
+  `cover_image_url` + `cover_image_alt` (v1: derived from the event
+  title); transition to `published` with `published_at = now()`.
+  Retry/failed per hard rule; transient 429/503 stop the run without
+  consuming retry_count (DECISIONS.md 2026-07-11). Idempotent: an event
+  with an uploaded image but a crashed status update re-publishes without
+  regenerating.
+  **DoD:** a batch of real events publishes end to end; re-run changes
+  nothing; a forced failure walks retry → failed; limit check verified.
+
+- [ ] **8.2 Cron endpoint `GET /api/cron/images` + vercel.json**
+  Same CRON_SECRET pattern, summary JSON, schedule offset in the
+  15-minute conveyor (e.g. `10,25,40,55 * * * *`).
+  **DoD:** 401 without secret; accurate counts; vercel.json valid with
+  four cron entries.
+
+- [ ] **8.3 Phase 3 end-to-end verification**
+  Full local conveyor: fetch → cluster → enrich → images. Verify ≥1 event
+  fully `published` with a viewable cover; **RLS check:** anon key sees
+  published events only (and nothing else); PROGRESS.md updated.
+  **DoD:** Phase 3 outcome met — first published events with
+  illustrations, daily image limit respected.
+
+**Checkpoint DoD:** the pipeline produces published, illustrated events
+unattended. Open PR, stop.
+
+---
+
 ## Proposed backlog (recorded 2026-07-12, NOT yet approved or scheduled)
 
 - [ ] **B1. Clustering near-duplicate observation**
@@ -294,6 +380,22 @@ Open PR, stop.
   **DoD (when approved):** a written observation summary with data; a
   threshold decision recorded in DECISIONS.md (change via app_settings,
   no code).
+
+- [ ] **B3. Accessibility pass on cover_image_alt** (recorded 2026-07-12)
+  v1 derives alt text from the event title. A proper pass should describe
+  the actual illustration (possibly a cheap LLM call on the metaphor) and
+  follow alt-text conventions for Turkish screen readers.
+  **DoD (when approved):** alt strategy decided + implemented; existing
+  events backfilled.
+
+- [ ] **B4. Enrich outputs its tone classification** (recorded 2026-07-12)
+  The art director internally classifies each story (playful/neutral/
+  somber) but the label is not persisted. Add `tone` to the enrich JSON
+  schema + an events column (migration), enabling tone-aware style
+  composition and quality analytics. Requires prompt wrapper + schema
+  changes — coordinate with the frozen-prompt versioning.
+  **DoD (when approved):** tone stored per event; backfill strategy
+  decided; analytics query documented.
 
 - [ ] **B2. Digest/roundup filtering at fetch**
   AA publishes non-news digest items ("Günün Ekonomik Gelişmeleri …",

@@ -14,6 +14,20 @@ done, what remains, known issues. Newest entry on top.
 
 ---
 
+### 2026-07-12 — Checkpoint 7: image foundation + supervised test
+- **Done:** 7.1–7.3 — migration 003 (image model/resolution/ratio/price
+  as typed app_settings); covers bucket verified (public read, anon write
+  rejected); gemini-image helper (token-accurate api_usage + est_cost_usd)
+  + supervised test route; real illustrations reviewed on 4 events.
+  Decisions: 3:4 portrait ratio; full-bleed suffix (migration 004);
+  style_prompts carry technique only — economy cartoon-face clause
+  removed, teknoloji faces clause added (migration 005)
+- **Remaining:** checkpoint 8 — images pipeline + publish
+  (`feat/images-publish`): pipeline module, cron endpoint, e2e + RLS check
+- **Known issues:** real cost ≈ $0.085/image (1414 output tokens) vs
+  $0.067 estimate — revisit max_images_per_day after more samples; dev
+  image-test route still live until checkpoint 8
+
 ### 2026-07-12 — Checkpoint 6: quality pass — PHASE 2 COMPLETE
 - **Done:** 6.1 — 15-event sample reviewed and signed off by the user:
   idiomatic Turkish, tone modes correct (somber wildfire condolence,
