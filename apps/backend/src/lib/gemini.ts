@@ -8,6 +8,19 @@ export const ENRICH_MODEL = "gemini-3.5-flash";
 
 const ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
 
+// 429 RESOURCE_EXHAUSTED (quota/rate limit) and 503 UNAVAILABLE (high
+// demand) are provider-side and temporary — retrying the same event later
+// will succeed unchanged. Per DECISIONS.md 2026-07-11 they must never
+// consume an event's retry_count.
+export function isTransientGeminiError(message: string): boolean {
+  return (
+    message.includes('"code":429') ||
+    message.includes('"code":503') ||
+    message.includes("RESOURCE_EXHAUSTED") ||
+    message.includes("UNAVAILABLE")
+  );
+}
+
 // API-enforced response shape: without this the model occasionally emits
 // trailing junk after the JSON object (observed 2026-07-11). Zod remains
 // the authoritative validator; this just guarantees parseable output.

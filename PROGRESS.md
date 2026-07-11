@@ -14,6 +14,19 @@ done, what remains, known issues. Newest entry on top.
 
 ---
 
+### 2026-07-12 — Checkpoint 8: images pipeline + publish — PHASE 3 COMPLETE
+- **Done:** 8.1–8.3 — images module (importance-desc budget, daily-limit
+  check against api_usage, crash-idempotent cover reuse, retry/transient
+  rules shared with enrich via isTransientGeminiError); /api/cron/images
+  + four-cron vercel.json conveyor; 15 events published with 3:4 covers;
+  RLS verified from the anon key: only published events visible,
+  raw_articles invisible. First end-to-end product output
+- **Remaining:** ~65 events pending image drain (manual runs or deployed
+  cron); Phase 4 (Expo app) breakdown next session
+- **Known issues:** real cost ≈ $0.085/image → full 40-event day ≈ $3.40;
+  max_images_per_day (50) should be revisited against budget; deploy
+  decision (Vercel Pro vs external scheduler) still open
+
 ### 2026-07-12 — Checkpoint 7: image foundation + supervised test
 - **Done:** 7.1–7.3 — migration 003 (image model/resolution/ratio/price
   as typed app_settings); covers bucket verified (public read, anon write

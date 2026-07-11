@@ -283,7 +283,7 @@ Open PR, stop.
 
 ---
 
-## Phase 3 — Image generation + publishing — PROPOSED, awaiting approval
+## Phase 3 — Image generation + publishing ✅ COMPLETE (2026-07-12)
 
 **Phase outcome:** events in `generating_images` get one cover
 illustration (category `style_prompt` + `visual_metaphor`), uploaded to
@@ -337,7 +337,7 @@ confirmed against one real reviewed image. Open PR, stop.
 ### PR Checkpoint 8 — Images pipeline + publish
 Branch: `feat/images-publish`
 
-- [ ] **8.1 Images module `src/pipeline/images.ts`**
+- [x] **8.1 Images module `src/pipeline/images.ts`**
   Select `generating_images` events (importance desc, created_at asc
   tiebreaker — biggest stories first, equal ones oldest-first); check `max_images_per_day` against
   today's `api_usage` image count before each generation; compose prompt;
@@ -351,13 +351,13 @@ Branch: `feat/images-publish`
   **DoD:** a batch of real events publishes end to end; re-run changes
   nothing; a forced failure walks retry → failed; limit check verified.
 
-- [ ] **8.2 Cron endpoint `GET /api/cron/images` + vercel.json**
+- [x] **8.2 Cron endpoint `GET /api/cron/images` + vercel.json**
   Same CRON_SECRET pattern, summary JSON, schedule offset in the
   15-minute conveyor (e.g. `10,25,40,55 * * * *`).
   **DoD:** 401 without secret; accurate counts; vercel.json valid with
   four cron entries.
 
-- [ ] **8.3 Phase 3 end-to-end verification**
+- [x] **8.3 Phase 3 end-to-end verification**
   Full local conveyor: fetch → cluster → enrich → images. Verify ≥1 event
   fully `published` with a viewable cover; **RLS check:** anon key sees
   published events only (and nothing else); PROGRESS.md updated.
