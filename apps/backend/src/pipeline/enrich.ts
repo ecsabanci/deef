@@ -1,6 +1,6 @@
 import { MAX_RETRY_COUNT } from "@deef/shared";
 import { supabase } from "@/lib/supabase";
-import { generateEnrichJson } from "@/lib/gemini";
+import { generateEnrichJson, isTransientGeminiError } from "@/lib/gemini";
 import { enrichOutputSchema } from "@/pipeline/enrich-schema";
 import {
   ENRICH_SYSTEM_PROMPT,
@@ -106,7 +106,7 @@ export async function runEnrich(): Promise<EnrichSummary> {
       const message = cause instanceof Error ? cause.message : String(cause);
       // Rate limits / API outages say nothing about the event itself:
       // don't touch retry_count, stop the run, let the next cron resume
-      if (isTransientApiError(message)) {
+      if (isTransientGeminiError(message)) {
         summary.errors.push(
           `transient API error at event ${event.id}, stopping run: ` +
             message.slice(0, 200),
@@ -120,18 +120,6 @@ export async function runEnrich(): Promise<EnrichSummary> {
   }
 
   return summary;
-}
-
-// 429 RESOURCE_EXHAUSTED (quota/rate limit) and 503 UNAVAILABLE (high
-// demand) are provider-side and temporary — retrying the same event later
-// will succeed unchanged
-function isTransientApiError(message: string): boolean {
-  return (
-    message.includes('"code":429') ||
-    message.includes('"code":503') ||
-    message.includes("RESOURCE_EXHAUSTED") ||
-    message.includes("UNAVAILABLE")
-  );
 }
 
 async function loadCategoryMap(): Promise<Map<string, number>> {
