@@ -369,6 +369,121 @@ unattended. Open PR, stop.
 
 ---
 
+## Phase 4 — Expo app — PROPOSED, awaiting approval
+
+**Phase outcome:** a running Expo app (iOS/Android) showing the published
+feed with category tabs, consistent 3:4 illustrated cards, pull-to-refresh,
+skeleton/error/empty/offline states, and a bottom-sheet news detail — all
+read-only via the anon key (RLS). Reactions/ELI5 view/push are Phase 5.
+
+**Ground rules:** anon key + `EXPO_PUBLIC_*` env vars only (never the
+service key); mobile consumes `@deef/shared`; all user-facing text
+Turkish; every Expo/simulator command runs on the user's machine.
+
+---
+
+### PR Checkpoint 9 — Mobile scaffold + theme system
+Branch: `feat/mobile-setup`
+
+- [x] **9.1 Expo scaffold in `apps/mobile` (user-assisted)**
+  `create-expo-app` (TS template, latest stable SDK), wired into the pnpm
+  workspace + turbo (`typecheck` script), TS strict via the shared base
+  config, `@deef/shared` consumed.
+  **DoD:** app boots in the simulator/Expo Go with a placeholder screen;
+  `pnpm typecheck` covers 3 packages and passes.
+
+- [x] **9.2 Anon Supabase client + env plumbing**
+  `EXPO_PUBLIC_SUPABASE_URL` / `EXPO_PUBLIC_SUPABASE_ANON_KEY` (Zod-
+  validated at startup, `.env.example` documented), anon supabase-js
+  client. Smoke: fetch active categories (anon-readable by RLS).
+  **DoD:** app renders the five Turkish category names from the real DB;
+  service key nowhere in `apps/mobile`.
+
+- [x] **9.3 Theme system**
+  Color/spacing/typography/radius tokens, light + dark palettes, Zustand
+  store (system/light/dark preference), `useTheme` hook.
+  **DoD:** toggling theme live-switches every token consumer; tokens are
+  typed (no raw hex in components).
+
+- [x] **9.4 UI kit: Text, Button, Card, Skeleton**
+  Token-driven primitives with a temporary demo screen showing all four
+  in both themes (demo removed when the feed lands).
+  **DoD:** demo screen reviewed in light + dark; components take no
+  hardcoded colors/sizes.
+
+**Checkpoint DoD:** themed app skeleton runs on device with live category
+data. Open PR, stop.
+
+---
+
+### PR Checkpoint 10 — Feed screen
+Branch: `feat/mobile-feed`
+
+- [ ] **10.1 Data layer (TanStack Query)**
+  Query client + `usePublishedEvents(categorySlug?)` hook: published
+  events via anon RLS, feed ordering (see open question 1), reasonable
+  page size; row types built on `@deef/shared`.
+  **DoD:** hook returns real published events; category filter works;
+  refetch on pull works at the hook level.
+
+- [ ] **10.2 Feed UI**
+  FlashList of event cards (3:4 cover via expo-image with caching, title,
+  category chip, "AI ile üretildi" transparency label), category tabs from
+  the categories table (sort_order, "Tümü" first), pull-to-refresh,
+  skeleton loaders during initial load.
+  **DoD:** real feed scrolls smoothly with cached images on device; tabs
+  filter correctly; skeletons show on cold start.
+
+- [ ] **10.3 Error / empty / offline states**
+  Turkish copy + retry affordances; offline detection.
+  **DoD:** airplane mode shows the offline state and recovers on retry;
+  an empty category shows the empty state; a forced query error shows the
+  error state.
+
+**Checkpoint DoD:** the feed is a usable product on a real device. Open
+PR, stop.
+
+---
+
+### PR Checkpoint 11 — News detail bottom sheet
+Branch: `feat/mobile-detail`
+
+- [ ] **11.1 Bottom sheet detail (@gorhom/bottom-sheet)**
+  Tap card → sheet with full cover, title, summary, published time,
+  category, AI-generated label. (ELI5 toggle and reactions arrive in
+  Phase 5.) Smooth open/close with reanimated; dismiss by swipe/backdrop.
+  **DoD:** open/close feels 60fps on device; all content fields correct;
+  works in both themes.
+
+- [ ] **11.2 Phase 4 end-to-end verification**
+  Full pass on a real device against the production DB: cold start →
+  skeletons → feed → tab switches → detail → theme toggle → offline test.
+  PROGRESS.md updated.
+  **DoD:** MVP feed experience matches the PLANNING.md "premium feel"
+  principles; user signs off.
+
+**Checkpoint DoD:** Phase 4 outcome met. Open PR, stop.
+
+---
+
+## Open questions for Phase 4 (answer before approval)
+
+1. **Feed ordering.** Options: (a) `published_at` desc (pure freshness),
+   (b) `importance` desc then `published_at` desc (curated-first), or
+   (c) freshness with an importance boost. Recommendation: (b) within
+   "today", then older days by freshness — but this is a product call.
+2. **Category tabs:** confirm "Tümü" (all) as the first tab + the five
+   categories by `sort_order`.
+3. **Theme default:** follow the system (recommended) or default dark?
+4. **Test target:** which device/simulator will you use for the DoD
+   checks (iOS Simulator, Android emulator, physical phone via Expo Go)?
+   Affects how I phrase the verification steps.
+5. **Feed page size:** 20 initial + infinite scroll, or a flat "last 50"?
+   v1 volume (≤40/day) makes flat viable; infinite scroll is more future-
+   proof but adds pagination plumbing now.
+
+---
+
 ## Proposed backlog (recorded 2026-07-12, NOT yet approved or scheduled)
 
 - [ ] **B1. Clustering near-duplicate observation**

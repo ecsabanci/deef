@@ -14,6 +14,19 @@ done, what remains, known issues. Newest entry on top.
 
 ---
 
+### 2026-07-12 — Checkpoint 9: mobile scaffold + theme system
+- **Done:** 9.1–9.4 — Expo SDK 54 scaffold (Expo Go pin, DECISIONS.md) in
+  the pnpm workspace, typecheck across 3 packages; anon client +
+  EXPO_PUBLIC_* Zod env (live category smoke via RLS on iPhone); token
+  theme system with Zustand preference store (system default + manual
+  override); Text/Button/Card/Skeleton UI kit verified in both themes.
+  Fixed template's userInterfaceStyle:"light" pin that blocked dark mode
+- **Remaining:** checkpoint 10 (feed screen: TanStack Query, FlashList,
+  tabs, states), checkpoint 11 (bottom sheet + sign-off)
+- **Known issues:** README has no mobile setup section yet (add by
+  checkpoint 11); app name/slug still template "mobile" (Phase 6
+  branding); UiKitDemo screen is temporary until the feed lands
+
 ### 2026-07-12 — Checkpoint 8: images pipeline + publish — PHASE 3 COMPLETE
 - **Done:** 8.1–8.3 — images module (importance-desc budget, daily-limit
   check against api_usage, crash-idempotent cover reuse, retry/transient
