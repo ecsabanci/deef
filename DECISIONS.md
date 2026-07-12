@@ -15,6 +15,27 @@ discussed with the user before any code changes.
 
 ---
 
+### 2026-07-12 — Expo SDK 54 (Expo Go pin)
+- **Decision:** `apps/mobile` uses Expo SDK 54, not the latest (57).
+- **Rationale:** Checkpoint sign-offs happen on a physical iPhone via the
+  Expo Go store app, which runs SDK 54; newer SDKs require development
+  builds (EAS/Xcode pipeline) we don't want in Phase 4. SDK upgrade is
+  scheduled naturally with Phase 6's EAS build step.
+- **Affects:** apps/mobile dependency versions; Phase 6 upgrade task.
+
+### 2026-07-12 — Phase 4 product decisions (user, at breakdown approval)
+- **Decision:** Feed ordering: today's events by `importance` desc, older
+  content by `published_at` desc. Tabs: "Tümü" first, then categories by
+  `sort_order`. Theme: follow system, Zustand store keeps a manual
+  override for a future settings screen. Pagination: 20/page infinite
+  scroll (`useInfiniteQuery` + FlashList `onEndReached`). Testing: daily
+  dev on iOS Simulator, checkpoint sign-offs on a physical iPhone via
+  Expo Go.
+- **Rationale:** At 40 events/day a flat list goes stale by day two;
+  retrofitting pagination costs more than building it now. Curated-first
+  ordering matches the editorial product identity.
+- **Affects:** tasks 10.1/10.2 (data layer, feed UI), 9.3 (theme store).
+
 ### 2026-07-12 — Style prompts carry technique only; tone lives in directives
 - **Decision:** Category `style_prompt`s must describe TECHNIQUE (medium,
   palette, composition, hard-rule clauses) and never emotional register.
