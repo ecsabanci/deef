@@ -419,14 +419,25 @@ data. Open PR, stop.
 ### PR Checkpoint 10 — Feed screen
 Branch: `feat/mobile-feed`
 
-- [ ] **10.1 Data layer (TanStack Query)**
+- [x] **10.0 DESIGN.md — binding mobile design spec** (user-directed
+  addition, 2026-07-12)
+  Draft `docs/DESIGN.md` in the format of
+  `docs/design-reference-miranda.md` (tokens + recipes + do's/don'ts):
+  "digital broadsheet" identity, near-monochrome chrome with one accent,
+  warm neutrals in both light ("ink on paper") and dark ("paper on ink"),
+  serif display face via expo-font, extending checkpoint-9 tokens.
+  Referenced from CLAUDE.md as binding for all mobile UI work.
+  **DoD:** user approves the draft; CLAUDE.md references it; 10.2+ builds
+  against it.
+
+- [x] **10.1 Data layer (TanStack Query)**
   Query client + `usePublishedEvents(categorySlug?)` hook: published
   events via anon RLS, feed ordering (see open question 1), reasonable
   page size; row types built on `@deef/shared`.
   **DoD:** hook returns real published events; category filter works;
   refetch on pull works at the hook level.
 
-- [ ] **10.2 Feed UI**
+- [~] **10.2 Feed UI**
   FlashList of event cards (3:4 cover via expo-image with caching, title,
   category chip, "AI ile üretildi" transparency label), category tabs from
   the categories table (sort_order, "Tümü" first), pull-to-refresh,
@@ -502,6 +513,34 @@ Branch: `feat/mobile-detail`
   follow alt-text conventions for Turkish screen readers.
   **DoD (when approved):** alt strategy decided + implemented; existing
   events backfilled.
+
+- [ ] **B5. Palette warmth tuning against real covers** (recorded
+  2026-07-12)
+  Once real illustrations flow in the feed on device, revisit the
+  DESIGN.md paper tones against actual covers — ±5% warmth adjustments
+  expected. Token-value change only.
+  **DoD (when approved):** side-by-side device review; adjusted values in
+  tokens.ts + DESIGN.md; DECISIONS.md entry.
+
+- [ ] **B6. Image direction review** (recorded 2026-07-18, product/vision)
+  User doubts the illustration-first thesis after seeing real covers: some
+  read childish (Switzerland "tiny vs giant" metaphor), some mislead (Spain
+  celebration in red/yellow → looks like Galatasaray to a TR audience).
+  Two threads: (a) narrow prompt fixes — steer sports metaphors off
+  club-specific color combos and off juvenile size clichés (safe, do
+  anytime); (b) a real vision decision — keep illustration-first, OR pivot
+  to real-photo-primary with an on-demand "illustrate the news" feature
+  (would move image generation to on-demand). Real faces was floated —
+  conflicts with the no-real-faces hard rule + deepfake/likeness risk.
+  **DoD (when approved):** vision decision recorded in DECISIONS.md (amends
+  PLANNING.md if it pivots); any prompt fixes applied + re-reviewed.
+
+- [ ] **B5. Palette tuning against real covers** (recorded 2026-07-12)
+  Once real illustrations flow in the feed on device, revisit the
+  DESIGN.md paper tones against actual covers — ±5% warmth adjustments
+  may be needed so chrome neither yellows nor cools next to the art.
+  **DoD (when approved):** side-by-side device review in both themes;
+  any token changes recorded in DECISIONS.md.
 
 - [ ] **B4. Enrich outputs its tone classification** (recorded 2026-07-12)
   The art director internally classifies each story (playful/neutral/

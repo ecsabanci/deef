@@ -18,6 +18,9 @@ development.
   truth. Do not regenerate the schema; if a change is needed, propose a new
   migration file and record it in DECISIONS.md
 - **docs/haber-app-veri-modeli.md** → pipeline design and rationale
+- **docs/DESIGN.md** → BINDING design spec for all mobile UI work: tokens,
+  component recipes, do's/don'ts. UI code never contradicts it; changes go
+  through DECISIONS.md first
 
 ## Working discipline
 

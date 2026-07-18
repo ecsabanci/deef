@@ -15,6 +15,54 @@ discussed with the user before any code changes.
 
 ---
 
+### 2026-07-12 — DESIGN.md v1 approved; display serif = Fraunces
+- **Decision:** docs/DESIGN.md ("digital broadsheet") is the binding spec
+  for all mobile UI. Display serif: Fraunces via @expo-google-fonts.
+  Accent exclusivity rule: vermilion on at most one element type per
+  screen region (tab underline visible ⇒ card category marks neutral).
+  Checkpoint-9 tokens are extended in place (new palette values +
+  masthead/headline/label type roles, smd/xxl spacing, none/xs radii);
+  pills and shadows banned in broadsheet chrome.
+- **Rationale:** User direction: newspaper chrome that frames the AI
+  illustrations as the only rich color; format modeled on
+  docs/design-reference-miranda.md (format, not brand).
+- **Affects:** tokens.ts + all apps/mobile UI from 10.2 onward; CLAUDE.md
+  references DESIGN.md as binding.
+
+### 2026-07-12 — Single React enforced in Metro (pnpm monorepo)
+- **Decision:** `apps/mobile/metro.config.js` forces every `react` /
+  `react/*` import to resolve to the mobile app's copy via
+  `resolver.resolveRequest` + `require.resolve(..., { paths: [projectRoot] })`.
+  The config also sets `watchFolders`/`nodeModulesPaths` for the monorepo
+  and does NOT set `disableHierarchicalLookup` (pnpm nests a package's own
+  deps, e.g. expo -> expo-modules-core, which that flag would hide).
+  Root `.npmrc` uses `node-linker=hoisted`.
+- **Rationale:** The backend pulls `react@19.2.7` (Next 15.5 resolving
+  `^19.1.0`) while react-native pins `react@19.1.0`; two physical React
+  copies gave the renderer and components different hook dispatchers
+  ("Invalid hook call / useState of null"). pnpm 11 no longer reads
+  `pnpm.overrides` from package.json (moved to pnpm-workspace.yaml), so a
+  package.json override silently did nothing. Forcing resolution in Metro
+  is deterministic regardless of the store. FUTURE CLEANUP (optional): add
+  `overrides:` to pnpm-workspace.yaml to dedupe react repo-wide, after
+  which the Metro resolveRequest shim could be removed.
+- **Affects:** apps/mobile/metro.config.js, .npmrc; no runtime code.
+
+### 2026-07-12 — DESIGN.md v1 approved: digital broadsheet + Fraunces
+- **Decision:** docs/DESIGN.md is the BINDING spec for all mobile UI
+  (referenced from CLAUDE.md). Identity: digital broadsheet — warm
+  near-monochrome chrome framing the illustrations, hairline rules over
+  shadows, light/dark as ink-on-paper / paper-on-ink inversion. Display
+  serif: **Fraunces** (via @expo-google-fonts). Accent exclusivity rule:
+  vermilion never appears on more than one element type per screen region
+  (feed meta rows stay neutral while the tab underline is visible; the
+  bottom sheet may use the accent on its category label).
+- **Rationale:** Frames the AI illustrations as the only rich color;
+  format follows docs/design-reference-miranda.md (tokens + recipes +
+  do's/don'ts). Approved by the user 2026-07-12.
+- **Affects:** apps/mobile theme tokens (values updated in 10.2, names
+  preserved), all checkpoint 10–11 components; Button loses its pill.
+
 ### 2026-07-12 — Expo SDK 54 (Expo Go pin)
 - **Decision:** `apps/mobile` uses Expo SDK 54, not the latest (57).
 - **Rationale:** Checkpoint sign-offs happen on a physical iPhone via the
