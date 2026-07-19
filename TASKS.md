@@ -464,7 +464,7 @@ PR, stop.
 
 ---
 
-### PR Checkpoint 11 — News detail bottom sheet
+### PR Checkpoint 11 — News detail bottom sheet ✅ COMPLETE (2026-07-20)
 Branch: `feat/mobile-detail`
 
 - [x] **11.1 Bottom sheet detail (@gorhom/bottom-sheet)**
@@ -477,7 +477,9 @@ Branch: `feat/mobile-detail`
   **DoD:** open/close feels 60fps on device; all content fields correct;
   works in both themes.
 
-- [~] **11.2 Phase 4 end-to-end verification**
+- [x] **11.2 Phase 4 end-to-end verification** — user signed off on device
+  2026-07-20 (feed, tabs, refresh, infinite scroll, detail, ELI5,
+  source WebView, theme toggle, offline, empty all verified)
   Full pass on a real device against the production DB: cold start →
   skeletons → feed → tab switches → detail → theme toggle → offline test.
   PROGRESS.md updated.
