@@ -7,10 +7,12 @@ export interface FeedEvent {
   category_id: number;
   title: string;
   summary: string;
+  eli5_text: string | null;
   cover_image_url: string;
   cover_image_alt: string | null;
   importance: number;
   published_at: string;
+  source_url: string | null;
 }
 
 const PAGE_SIZE = 20;
@@ -43,8 +45,8 @@ async function fetchPage(
   let query = supabase
     .from("events")
     .select(
-      "id, category_id, title, summary, cover_image_url, cover_image_alt, " +
-        "importance, published_at",
+      "id, category_id, title, summary, eli5_text, cover_image_url, " +
+        "cover_image_alt, importance, published_at, source_url",
     );
   if (categoryId !== null) {
     query = query.eq("category_id", categoryId);

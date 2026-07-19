@@ -165,6 +165,13 @@ Same anatomy in `colors.skeleton` blocks (radius 4): 3:4 block, then a
 70%-width 22px line, a 40%-width 12px line. Pulse via opacity 0.5↔1.
 Show 3 skeleton cards on cold start.
 
+### Source Web Sheet
+**Role:** In-app browser for "read at source"
+A second bottom sheet at ~95% holding a WebView, opened from the detail
+sheet's "Kaynakta oku" link. Small header row: source domain (caption
+secondary) + a close (×) icon. Content panning disabled so the page
+scrolls without fighting the sheet; dismiss via close or backdrop.
+
 ### Bottom Sheet Detail
 **Role:** The story page
 `colors.surface` sheet, top radius 12, grabber handle (32×4, `border`
