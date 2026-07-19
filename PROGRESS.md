@@ -27,6 +27,21 @@ done, what remains, known issues. Newest entry on top.
   checkpoint 11); app name/slug still template "mobile" (Phase 6
   branding); UiKitDemo screen is temporary until the feed lands
 
+### 2026-07-18 — Checkpoint 10: feed screen
+- **Done:** 10.0 DESIGN.md (binding broadsheet spec, Fraunces); 10.1 data
+  layer (TanStack Query, two-phase ordering + empty-leading-page
+  auto-advance); 10.2 feed UI (Masthead, CategoryTabs, FeedCard,
+  SkeletonCard, FlashList, pull-to-refresh, infinite scroll); 10.3
+  error/empty/offline states (StateBlock + expo-network); 10.4 masthead
+  theme toggle (Feather sun/moon, animated) + Turkish uppercase fix.
+  Verified on device: feed renders, states work, Fraunces loads, dark/light
+  invert. Resolved a long pnpm+Metro dual-React "Invalid hook call" (single
+  react forced in metro.config.js) and two missing manifest deps
+  (expo-network, @expo/vector-icons)
+- **Remaining:** checkpoint 11 (bottom-sheet detail + Phase 4 sign-off)
+- **Known issues:** returning to "system" theme needs the future settings
+  screen; B5 (palette vs real covers) + B6 (image prompts) still open
+
 ### 2026-07-12 — Checkpoint 8: images pipeline + publish — PHASE 3 COMPLETE
 - **Done:** 8.1–8.3 — images module (importance-desc budget, daily-limit
   check against api_usage, crash-idempotent cover reuse, retry/transient
