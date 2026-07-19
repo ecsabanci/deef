@@ -437,7 +437,7 @@ Branch: `feat/mobile-feed`
   **DoD:** hook returns real published events; category filter works;
   refetch on pull works at the hook level.
 
-- [~] **10.2 Feed UI**
+- [x] **10.2 Feed UI**
   FlashList of event cards (3:4 cover via expo-image with caching, title,
   category chip, "AI ile üretildi" transparency label), category tabs from
   the categories table (sort_order, "Tümü" first), pull-to-refresh,
@@ -445,7 +445,15 @@ Branch: `feat/mobile-feed`
   **DoD:** real feed scrolls smoothly with cached images on device; tabs
   filter correctly; skeletons show on cold start.
 
-- [ ] **10.3 Error / empty / offline states**
+- [x] **10.3 Error / empty / offline states**
+
+- [x] **10.4 Masthead theme toggle** (user-directed, 2026-07-12; DESIGN.md
+  amended — see DECISIONS.md 2026-07-18)
+  Feather sun/moon icon in the masthead toggling the theme with a
+  rotate+pop animation (core Animated); also fixes Turkish uppercasing
+  (EKONOMİ/TEKNOLOJİ) via a locale-correct helper.
+  **DoD:** toggle flips light/dark on device in both themes with the
+  animation; tabs/meta show correct Turkish capital İ; typecheck passes.
   Turkish copy + retry affordances; offline detection.
   **DoD:** airplane mode shows the offline state and recovers on retry;
   an empty category shows the empty state; a forced query error shows the
@@ -522,18 +530,16 @@ Branch: `feat/mobile-detail`
   **DoD (when approved):** side-by-side device review; adjusted values in
   tokens.ts + DESIGN.md; DECISIONS.md entry.
 
-- [ ] **B6. Image direction review** (recorded 2026-07-18, product/vision)
-  User doubts the illustration-first thesis after seeing real covers: some
-  read childish (Switzerland "tiny vs giant" metaphor), some mislead (Spain
-  celebration in red/yellow → looks like Galatasaray to a TR audience).
-  Two threads: (a) narrow prompt fixes — steer sports metaphors off
-  club-specific color combos and off juvenile size clichés (safe, do
-  anytime); (b) a real vision decision — keep illustration-first, OR pivot
-  to real-photo-primary with an on-demand "illustrate the news" feature
-  (would move image generation to on-demand). Real faces was floated —
-  conflicts with the no-real-faces hard rule + deepfake/likeness risk.
-  **DoD (when approved):** vision decision recorded in DECISIONS.md (amends
-  PLANNING.md if it pivots); any prompt fixes applied + re-reviewed.
+- [ ] **B6. Image prompt improvements** (recorded 2026-07-18)
+  Illustration-first reaffirmed (real-photo/real-face pivot dropped
+  2026-07-18). Improve the art-director prompt so covers read less
+  childish and never mislead: (a) steer sports metaphors OFF
+  club-specific color combos — the Spain red/yellow cover read as
+  Galatasaray to a TR audience; (b) steer OFF juvenile literal
+  size-metaphor clichés (the Switzerland "tiny player vs giant opponent").
+  Coordinate with the frozen-prompt versioning + the v2 neutral-register
+  candidate (DECISIONS.md 2026-07-12).
+  **DoD (when approved):** prompt updated, sample re-reviewed by the user.
 
 - [ ] **B5. Palette tuning against real covers** (recorded 2026-07-12)
   Once real illustrations flow in the feed on device, revisit the

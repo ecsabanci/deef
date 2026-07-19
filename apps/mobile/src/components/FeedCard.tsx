@@ -3,6 +3,7 @@ import { Image } from "expo-image";
 import { Text } from "../ui";
 import { useTheme } from "../theme/theme-store";
 import { formatRelativeTr } from "../lib/relative-time";
+import { toTrUpper } from "../lib/turkish";
 import type { FeedEvent } from "../hooks/usePublishedEvents";
 
 interface FeedCardProps {
@@ -38,7 +39,7 @@ export function FeedCard({ event, categoryName, onPress }: FeedCardProps) {
       <View style={{ marginTop: theme.spacing.smd, gap: theme.spacing.xs }}>
         <View style={{ flexDirection: "row", alignItems: "baseline", gap: theme.spacing.xs }}>
           <Text variant="label" color="secondary">
-            {categoryName}
+            {toTrUpper(categoryName)}
           </Text>
           <Text variant="caption" color="secondary">
             · {formatRelativeTr(event.published_at)}

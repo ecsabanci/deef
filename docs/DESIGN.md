@@ -124,8 +124,15 @@ broadsheet chrome — no pills.
 ### Masthead
 **Role:** App header, sets the newspaper voice
 Safe-area-aware paper strip. "deef" in serif masthead 34/700 flush-left;
-right-aligned Turkish date line in caption/secondary
-("12 Temmuz, Cumartesi"). Hairline rule below. No icons, no elevation.
+right side holds the Turkish date line in caption/secondary
+("12 Temmuz, Cumartesi") plus a single theme-toggle icon (see below).
+Hairline rule below. No elevation.
+**Theme toggle (the ONE permitted masthead icon):** a minimal line glyph
+(Feather `sun` in light mode, `moon` in dark), `textPrimary` color, ≥44
+touch target via hitSlop. Tapping sets an explicit light/dark override
+(system remains the untouched default until first tap; returning to
+system is a future settings-screen affordance). This is the sole
+exception to the otherwise icon-free chrome.
 
 ### Category Tab Bar
 **Role:** Feed filter, sits under the masthead

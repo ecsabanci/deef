@@ -1,12 +1,13 @@
 import { useMemo, useState } from "react";
 import { RefreshControl, StyleSheet, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { useNetworkState } from "expo-network";
 import { FlashList } from "@shopify/flash-list";
 import { Masthead } from "../components/Masthead";
 import { CategoryTabs } from "../components/CategoryTabs";
 import { FeedCard } from "../components/FeedCard";
 import { SkeletonCard } from "../components/SkeletonCard";
-import { Text } from "../ui";
+import { StateBlock } from "../components/StateBlock";
 import { useTheme } from "../theme/theme-store";
 import { useCategories } from "../hooks/useCategories";
 import { usePublishedEvents, type FeedEvent } from "../hooks/usePublishedEvents";
@@ -33,6 +34,9 @@ export function FeedScreen() {
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const categories = useCategories();
   const events = usePublishedEvents(categoryId);
+  const network = useNetworkState();
+  const isOffline =
+    network.isConnected === false || network.isInternetReachable === false;
 
   const allEvents = useMemo(
     () => events.data?.pages.flatMap((page) => page.events) ?? [],
@@ -53,17 +57,36 @@ export function FeedScreen() {
         onSelect={setCategoryId}
       />
       <View style={{ flex: 1 }}>
-      {events.isLoading ? (
-        // Cold start: three pulsing story placeholders (DESIGN.md)
+      {isOffline && allEvents.length === 0 ? (
+        // Offline with nothing cached; cached data stays readable offline
+        <StateBlock
+          title="Bağlantı yok"
+          message="İnternet bağlantını kontrol edip tekrar dene."
+          actionLabel="Tekrar dene"
+          onAction={() => void events.refetch()}
+        />
+      ) : events.isLoading ? (
+        // Cold start: pulsing story placeholders (DESIGN.md)
         <View style={{ padding: theme.spacing.md, gap: theme.spacing.xl }}>
           <SkeletonCard />
           <SkeletonCard />
         </View>
       ) : events.isError ? (
-        // Interim error text — proper state blocks land in task 10.3
-        <View style={{ padding: theme.spacing.lg }}>
-          <Text color="error">Bir şeyler ters gitti: {events.error.message}</Text>
-        </View>
+        <StateBlock
+          title="Bir şeyler ters gitti"
+          message="İçerik yüklenemedi. Lütfen tekrar dene."
+          actionLabel="Tekrar dene"
+          onAction={() => void events.refetch()}
+        />
+      ) : allEvents.length === 0 ? (
+        <StateBlock
+          title={
+            categoryId === null
+              ? "Henüz haber yok"
+              : "Bu kategoride henüz haber yok"
+          }
+          message="Yeni haberler geldikçe burada görünecek."
+        />
       ) : (
         <FlashList
           data={allEvents}

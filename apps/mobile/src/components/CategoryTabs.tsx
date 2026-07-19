@@ -1,6 +1,7 @@
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "../ui";
 import { useTheme } from "../theme/theme-store";
+import { toTrUpper } from "../lib/turkish";
 import type { Category } from "../hooks/useCategories";
 
 interface CategoryTabsProps {
@@ -61,7 +62,7 @@ export function CategoryTabs({
                     : theme.colors.textSecondary,
                 }}
               >
-                {tab.label}
+                {toTrUpper(tab.label)}
               </Text>
             </Pressable>
           );

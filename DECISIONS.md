@@ -48,6 +48,20 @@ discussed with the user before any code changes.
   which the Metro resolveRequest shim could be removed.
 - **Affects:** apps/mobile/metro.config.js, .npmrc; no runtime code.
 
+### 2026-07-18 — Masthead theme toggle (DESIGN.md amendment)
+- **Decision:** The masthead gains a single theme-toggle icon (Feather
+  sun/moon) on the right, beside the date — the sole exception to the
+  otherwise icon-free chrome. Tapping sets an explicit light/dark override
+  via the Zustand store; "system" stays the default until first tap.
+  Adds `@expo/vector-icons` as a declared mobile dependency.
+- **Rationale:** User wanted theme switching reachable from the feed
+  (chose the icon option over text/date-replacement). Amends the DESIGN.md
+  Masthead recipe, which previously said "no icons"; DESIGN.md updated to
+  match. Icon uses `textPrimary`, not accent (accent exclusivity: the tab
+  underline owns the accent in this region).
+- **Affects:** docs/DESIGN.md Masthead recipe, apps/mobile Masthead +
+  package.json.
+
 ### 2026-07-12 — DESIGN.md v1 approved: digital broadsheet + Fraunces
 - **Decision:** docs/DESIGN.md is the BINDING spec for all mobile UI
   (referenced from CLAUDE.md). Identity: digital broadsheet — warm

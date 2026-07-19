@@ -55,11 +55,12 @@ export const typography = {
   body: { fontSize: 16, lineHeight: 23, fontWeight: "400" },
   caption: { fontSize: 13, lineHeight: 17, fontWeight: "400" },
   label: {
+    // No textTransform: Turkish uppercasing is done in JS via toTrUpper
+    // (CSS uppercase mangles i -> I instead of İ)
     fontSize: 12,
     lineHeight: 14,
     fontWeight: "600",
     letterSpacing: 0.5,
-    textTransform: "uppercase",
   },
 } as const satisfies Record<string, TextStyle>;
 
