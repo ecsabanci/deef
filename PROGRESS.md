@@ -27,6 +27,19 @@ done, what remains, known issues. Newest entry on top.
   checkpoint 11); app name/slug still template "mobile" (Phase 6
   branding); UiKitDemo screen is temporary until the feed lands
 
+### 2026-07-20 — Checkpoint 11: news detail bottom sheet
+- **Done:** 11.1 — @gorhom/bottom-sheet detail (cover, meta, serif title,
+  summary); ELI5 as accent button → "thinking" spinner → reveal; "Kaynakta
+  oku" opens an in-app WebView sheet stacked at matching 92% height
+  (stackBehavior push). Backend: migration 006 events.source_url populated
+  by enrich + backfill. Solved a chain of Expo/pnpm issues: reanimated 4
+  worklets JS/native mismatch (pinned react-native-worklets 0.5.1 per
+  bundledNativeModules), double babel worklets plugin (deleted babel.config,
+  preset auto-adds it), WebView zero-height + gorhom replace-vs-push
+- **Remaining:** 11.2 Phase 4 on-device sign-off, then checkpoint PR
+- **Known issues:** expo-web-browser now unused (superseded by WebView),
+  can be removed; ELIsimple "thinking" spinner is intentional theater
+
 ### 2026-07-18 — Checkpoint 10: feed screen
 - **Done:** 10.0 DESIGN.md (binding broadsheet spec, Fraunces); 10.1 data
   layer (TanStack Query, two-phase ordering + empty-leading-page

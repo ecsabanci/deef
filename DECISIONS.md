@@ -48,6 +48,26 @@ discussed with the user before any code changes.
   which the Metro resolveRequest shim could be removed.
 - **Affects:** apps/mobile/metro.config.js, .npmrc; no runtime code.
 
+### 2026-07-20 — Detail sheet: ELI5 shown + source link (events.source_url)
+- **Decision:** The news detail sheet reveals `eli5_text` behind an
+  accent "5 yaşındaymışım gibi anlat" button that shows a short "thinking"
+  spinner before the "BASİTÇE" text (deliberate UX theater — the text is
+  pre-generated). A "Kaynakta oku" underlined text link opens the original
+  article in an in-app WebView bottom sheet (react-native-webview) we
+  control, not the system browser. Because `raw_articles` is not
+  anon-readable, migration 006 adds `events.source_url`, populated by the
+  enrich step (earliest linked article) + a one-time backfill. The sheet's
+  accent moves from the category label onto the ELI5 button (accent
+  exclusivity). expo-web-browser is no longer used.
+- **Rationale:** User feedback that the detail felt too short. ELI5 was
+  already generated (a small pull-forward of Phase 5's ELI5 view;
+  reactions stay Phase 5). Source link gives full depth on demand without
+  storing/scraping full article text; respects the publisher. Full-article
+  fetching for richer AI summaries was considered and deferred as a larger
+  future investment.
+- **Affects:** docs/006_event_source_url.sql, src/pipeline/enrich.ts,
+  apps/mobile (usePublishedEvents, NewsDetailSheet, expo-web-browser dep).
+
 ### 2026-07-18 — Masthead theme toggle (DESIGN.md amendment)
 - **Decision:** The masthead gains a single theme-toggle icon (Feather
   sun/moon) on the right, beside the date — the sole exception to the

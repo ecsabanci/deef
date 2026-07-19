@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { RefreshControl, StyleSheet, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useNetworkState } from "expo-network";
@@ -8,6 +8,14 @@ import { CategoryTabs } from "../components/CategoryTabs";
 import { FeedCard } from "../components/FeedCard";
 import { SkeletonCard } from "../components/SkeletonCard";
 import { StateBlock } from "../components/StateBlock";
+import {
+  NewsDetailSheet,
+  type NewsDetailSheetRef,
+} from "../components/NewsDetailSheet";
+import {
+  SourceWebSheet,
+  type SourceWebSheetRef,
+} from "../components/SourceWebSheet";
 import { useTheme } from "../theme/theme-store";
 import { useCategories } from "../hooks/useCategories";
 import { usePublishedEvents, type FeedEvent } from "../hooks/usePublishedEvents";
@@ -47,6 +55,8 @@ export function FeedScreen() {
       new Map((categories.data ?? []).map((c) => [c.id, c.name_tr] as const)),
     [categories.data],
   );
+  const detailRef = useRef<NewsDetailSheetRef>(null);
+  const sourceRef = useRef<SourceWebSheetRef>(null);
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -95,9 +105,12 @@ export function FeedScreen() {
             <FeedCard
               event={item}
               categoryName={categoryNameById.get(item.category_id) ?? ""}
-              onPress={() => {
-                // Detail bottom sheet arrives in checkpoint 11
-              }}
+              onPress={() =>
+                detailRef.current?.present(
+                  item,
+                  categoryNameById.get(item.category_id) ?? "",
+                )
+              }
             />
           )}
           ItemSeparatorComponent={Separator}
@@ -125,6 +138,11 @@ export function FeedScreen() {
         />
       )}
       </View>
+      <NewsDetailSheet
+        ref={detailRef}
+        onOpenSource={(url) => sourceRef.current?.present(url)}
+      />
+      <SourceWebSheet ref={sourceRef} />
       <StatusBar style={theme.mode === "dark" ? "light" : "dark"} />
     </View>
   );

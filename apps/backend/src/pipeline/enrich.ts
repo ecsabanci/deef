@@ -29,6 +29,7 @@ interface PendingEvent {
 }
 
 interface ArticleRow {
+  url: string;
   title: string;
   excerpt: string | null;
   published_at: string | null;
@@ -68,7 +69,7 @@ export async function runEnrich(): Promise<EnrichSummary> {
     try {
       await setStatus(event.id, "enriching");
 
-      const articles = await loadArticles(event.id);
+      const { articles, sourceUrl } = await loadArticles(event.id);
       if (articles.length === 0) {
         throw new Error("event has no linked articles");
       }
@@ -94,6 +95,7 @@ export async function runEnrich(): Promise<EnrichSummary> {
           visual_metaphor: output.cover_metaphor,
           importance: output.importance,
           category_id: categoryId,
+          source_url: sourceUrl,
           status: "generating_images",
           error_message: null,
         })
@@ -133,21 +135,27 @@ async function loadCategoryMap(): Promise<Map<string, number>> {
   );
 }
 
-async function loadArticles(eventId: number): Promise<EnrichArticleInput[]> {
+async function loadArticles(
+  eventId: number,
+): Promise<{ articles: EnrichArticleInput[]; sourceUrl: string | null }> {
   const { data, error } = await supabase
     .from("raw_articles")
-    .select("title, excerpt, published_at, sources(name)")
+    .select("url, title, excerpt, published_at, sources(name)")
     .eq("event_id", eventId)
     .order("published_at", { ascending: true });
   if (error) {
     throw new Error(`failed to read event articles: ${error.message}`);
   }
-  return ((data ?? []) as unknown as ArticleRow[]).map((row) => ({
+  const rows = (data ?? []) as unknown as ArticleRow[];
+  const articles = rows.map((row) => ({
     sourceName: row.sources?.name ?? "unknown",
     title: row.title,
     excerpt: row.excerpt,
     publishedAt: row.published_at,
   }));
+  // Earliest article (list is ordered by published_at asc) is the event's
+  // representative source for the "read at source" link
+  return { articles, sourceUrl: rows[0]?.url ?? null };
 }
 
 async function setStatus(eventId: number, status: string): Promise<void> {

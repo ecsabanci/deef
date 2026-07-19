@@ -1,5 +1,7 @@
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import {
   useFonts,
   Fraunces_600SemiBold,
@@ -10,23 +12,25 @@ import { FeedScreen } from "./src/screens/FeedScreen";
 
 export default function App() {
   // Load Fraunces in the background — never block the whole app on a font.
-  // Headlines briefly use the system serif until it registers. (A splash
-  // gate to avoid that flash is a later polish task.)
+  // Headlines briefly use the system serif until it registers.
   const [fontsLoaded, fontError] = useFonts({
     Fraunces_600SemiBold,
     Fraunces_700Bold,
   });
   if (fontError) {
     console.warn("Fraunces load failed, using fallback serif:", fontError);
-  } else if (!fontsLoaded) {
-    console.log("Fraunces still loading…");
   }
+  void fontsLoaded;
 
   return (
-    <SafeAreaProvider>
-      <QueryClientProvider client={queryClient}>
-        <FeedScreen />
-      </QueryClientProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <QueryClientProvider client={queryClient}>
+          <BottomSheetModalProvider>
+            <FeedScreen />
+          </BottomSheetModalProvider>
+        </QueryClientProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

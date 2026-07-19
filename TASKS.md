@@ -464,17 +464,22 @@ PR, stop.
 
 ---
 
-### PR Checkpoint 11 — News detail bottom sheet
+### PR Checkpoint 11 — News detail bottom sheet ✅ COMPLETE (2026-07-20)
 Branch: `feat/mobile-detail`
 
-- [ ] **11.1 Bottom sheet detail (@gorhom/bottom-sheet)**
+- [x] **11.1 Bottom sheet detail (@gorhom/bottom-sheet)**
+  Includes (user-requested 2026-07-20): ELI5 button→spinner→reveal +
+  "Kaynakta oku" in-app WebView sheet (stacked at matching 92% height;
+  migration 006 events.source_url; DECISIONS.md).
   Tap card → sheet with full cover, title, summary, published time,
   category, AI-generated label. (ELI5 toggle and reactions arrive in
   Phase 5.) Smooth open/close with reanimated; dismiss by swipe/backdrop.
   **DoD:** open/close feels 60fps on device; all content fields correct;
   works in both themes.
 
-- [ ] **11.2 Phase 4 end-to-end verification**
+- [x] **11.2 Phase 4 end-to-end verification** — user signed off on device
+  2026-07-20 (feed, tabs, refresh, infinite scroll, detail, ELI5,
+  source WebView, theme toggle, offline, empty all verified)
   Full pass on a real device against the production DB: cold start →
   skeletons → feed → tab switches → detail → theme toggle → offline test.
   PROGRESS.md updated.
