@@ -1,91 +1,112 @@
-# deef
+<h1 align="center">deef</h1>
 
-A mobile app that presents news through AI-generated editorial
-illustrations. Articles covering the same story are clustered into a single
-"event"; an LLM writes the summary and a visual metaphor, and the Gemini
-image API illustrates it in a category-specific art style.
+<p align="center">
+  News you read as pictures. Articles about the same story are clustered into one event, an LLM writes the summary and a visual metaphor for it, and Gemini illustrates that metaphor in an art style chosen for the category.
+</p>
 
-Spec-driven development: see **PLANNING.md** (vision/phases), **TASKS.md**
-(task list), **DECISIONS.md** (decision log), **PROGRESS.md** (session log),
-and `docs/` (database schema + data model rationale).
+<p align="center">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js"/>
+  <img src="https://img.shields.io/badge/Expo-000020?style=flat-square&logo=expo&logoColor=white" alt="Expo"/>
+  <img src="https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white" alt="Supabase"/>
+  <img src="https://img.shields.io/badge/pgvector-4169E1?style=flat-square&logo=postgresql&logoColor=white" alt="pgvector"/>
+  <img src="https://img.shields.io/badge/Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white" alt="Gemini"/>
+  <img src="https://img.shields.io/badge/Turborepo-EF4444?style=flat-square&logo=turborepo&logoColor=white" alt="Turborepo"/>
+</p>
 
-## Repository layout
+<!-- Add a screenshot or a short GIF here once the mobile client renders an event.
+<p align="center"><img src="docs/preview.png" alt="deef preview" width="700"/></p>
+-->
+
+## Why
+
+Ten outlets cover the same story and you end up reading the same paragraph ten times. deef collapses those into a single event, then gives it an illustration instead of yet another stock photo. The interesting part is not the UI. It is the pipeline that decides two articles are the same story, and the prompt chain that turns a news summary into a visual metaphor an image model can actually draw.
+
+## How it works
 
 ```
-apps/backend      Next.js App Router — pipeline crons + API routes (Vercel)
-apps/mobile      (later phase) Expo + React Native
-packages/shared   Types/constants mirrored from the DB schema
-docs/             SQL migrations (source of truth) + data model doc
+RSS feeds
+   │
+   ▼  fetch      raw articles + 768-dim embeddings (gemini-embedding-001)
+   │
+   ▼  cluster    pgvector cosine similarity groups articles into events
+   │
+   ▼  enrich     LLM writes the summary and a visual metaphor
+   │
+   ▼  images     Gemini renders the metaphor in a category-specific art style
+   │
+   ▼  published
 ```
 
-Pipeline: `fetch` (RSS → raw_articles + embeddings) → `cluster`
-(pgvector cosine similarity → events) → `enrich` (Phase 2) → `images`
-(Phase 3) → published.
+Each step runs as an idempotent cron route on Vercel. Re-running one never duplicates an article or an event, which means a failed run is safe to simply replay.
 
-## Prerequisites
+## Engineering notes
 
-- Node.js ≥ 22, pnpm ≥ 11 (`corepack enable`)
-- A Supabase project (Postgres + pgvector)
-- A Google Gemini API key
+A few decisions worth pointing out, with the full reasoning in `DECISIONS.md`.
 
-## Setup
+**Idempotency over bookkeeping.** Every pipeline step can run twice with no side effects, so there is no run-state machine to keep in sync and no cleanup job when a cron times out halfway.
 
-1. **Install dependencies**
+**Fail fast on configuration.** Environment variables are validated with Zod at startup, so a missing key surfaces immediately by name rather than as a null reference three layers into the pipeline.
 
-   ```bash
-   pnpm install
-   ```
+**The service role key never leaves the server.** `src/lib/supabase.ts` is `server-only` guarded, so an accidental client import becomes a build error instead of a leaked credential.
 
-2. **Apply the database migrations** — paste each file into the Supabase
-   SQL editor, in order:
+**Spending limits live in the database, not the code.** Every Gemini call is written to an `api_usage` table and the pipeline checks daily ceilings from `app_settings` before it produces anything. Changing a limit does not need a deploy.
 
-   - `docs/001_initial_schema.sql` (tables, RLS, category + settings seeds)
-   - `docs/002_cluster_similarity_rpc.sql` (similarity-search RPC)
+**Written before it was built.** `PLANNING.md` holds the vision and phases, `TASKS.md` the task list, `DECISIONS.md` the decision log and `PROGRESS.md` the session log. The schema in `docs/` is the source of truth and `packages/shared` mirrors it as types.
 
-3. **Environment** — create `apps/backend/.env.local` (gitignored; never
-   commit real values):
+## Layout
 
-   | Variable | Value |
-   |----------|-------|
-   | `SUPABASE_URL` | Bare project URL, e.g. `https://abcdefgh.supabase.co` (no `/rest/v1/` suffix) |
-   | `SUPABASE_SERVICE_ROLE_KEY` | Service role key — server-only, bypasses RLS |
-   | `GEMINI_API_KEY` | Google Gemini API key |
-   | `CRON_SECRET` | Shared secret for `/api/cron/*`, e.g. `openssl rand -hex 32` |
+```
+apps/backend       Next.js App Router, pipeline crons and API routes (Vercel)
+apps/mobile        Expo and React Native client
+packages/shared    Types and constants mirrored from the database schema
+docs/              SQL migrations (source of truth) and the data model doc
+```
 
-   All four are required; startup fails fast with a Zod error naming any
-   missing variable.
+## Status
 
-4. **Seed the RSS sources** (idempotent, safe to re-run):
+The fetch and cluster stages run end to end. Enrichment and image generation are the next phases, and the mobile client is being built against the published events.
 
-   ```bash
-   pnpm --filter @deef/backend seed:sources
-   ```
+## Running it locally
 
-## Running
+**Prerequisites** — Node.js 22 or newer, pnpm 11 or newer (`corepack enable`), a Supabase project with pgvector and a Google Gemini API key.
 
 ```bash
-pnpm dev        # backend dev server (default http://localhost:3000)
-pnpm typecheck  # must pass clean after every task
+pnpm install
 ```
 
-Trigger the pipeline steps manually (this is what Vercel Cron will do in
-production — schedules live in `apps/backend/vercel.json`):
+Apply the migrations by pasting each file into the Supabase SQL editor, in order.
+
+- `docs/001_initial_schema.sql` (tables, RLS, category and settings seeds)
+- `docs/002_cluster_similarity_rpc.sql` (similarity search RPC)
+
+Create `apps/backend/.env.local`. All four values are required and startup fails with a Zod error naming anything missing.
+
+| Variable | Value |
+| --- | --- |
+| `SUPABASE_URL` | Bare project URL, for example `https://abcdefgh.supabase.co` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service role key, server only, bypasses RLS |
+| `GEMINI_API_KEY` | Google Gemini API key |
+| `CRON_SECRET` | Shared secret for `/api/cron/*`, for example `openssl rand -hex 32` |
+
+Seed the RSS sources. This is idempotent and safe to re-run.
+
+```bash
+pnpm --filter @deef/backend seed:sources
+```
+
+Then start the backend.
+
+```bash
+pnpm dev        # http://localhost:3000
+pnpm typecheck  # expected to pass clean
+```
+
+Trigger the pipeline by hand. This is exactly what Vercel Cron does in production, with the schedules in `apps/backend/vercel.json`.
 
 ```bash
 curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/fetch
 curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/cluster
 ```
 
-Both return a JSON summary and are idempotent — re-running never duplicates
-articles or events. Requests without the correct Bearer secret get a 401.
-`GET /api/health` is unauthenticated and checks env wiring.
-
-## Operational notes
-
-- Every Gemini call is logged to the `api_usage` table; daily limits live
-  in `app_settings` (`max_events_per_day`, `max_images_per_day`) and are
-  checked by the pipeline before producing.
-- Embeddings use `gemini-embedding-001` at 768 dimensions (see
-  DECISIONS.md 2026-07-11).
-- The service role key must never reach any client bundle
-  (`src/lib/supabase.ts` is `server-only`-guarded).
+Both return a JSON summary. Requests without the correct bearer secret get a 401. `GET /api/health` is unauthenticated and checks that the environment is wired correctly.
